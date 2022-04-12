@@ -8,4 +8,7 @@ default: $(TARGET)
 $(TARGET): $(SRC) 
 	g++ $(SRC) -I$(DIR) $(LDFLAGS) $(CXXFLAGS) -o $(TARGET)
 clean:
+	rm -f $(TARGET)
+
+cleanall:
 	rm -f $(TARGET) gen*

@@ -1,10 +1,10 @@
-#ifndef GALAXY_IMPORTER_H
-#define GALAXY_IMPORTER_H
+#ifndef NEBULA_IMPORTER_H
+#define NEBULA_IMPORTER_H
 
 #include <vector>
 #include <fstream>
 
-struct Galaxy {
+struct Nebula {
   std::vector<float> Offsets;
   std::vector<float> Size;
   std::vector<uint> Temp; // 0 blue, 1 white, 2 yellow, 3 orange, 4 red
@@ -88,7 +88,7 @@ struct Galaxy {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 //   cy::GLSLProgram ProgS;
-  if (!ProgS.BuildFiles("shaders/inst-id.vert", "shaders/star.frag", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
+  if (!ProgS.BuildFiles("shaders/inst-id.vert", "shaders/nebula.frag", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
     std::cerr << "Shader failed to compile.\n";
     return;
   }
@@ -113,7 +113,7 @@ struct Galaxy {
   sf::Image Billboard;
   cy::GLTexture2D BB;
 
-  float PS = 20;
+  float PS = 3000;
 
 };
 

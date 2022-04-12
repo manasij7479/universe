@@ -8,6 +8,7 @@
 #include "cyCodeBase/cyGL.h"
 
 #include "utils/Galaxy.h"
+#include "utils/Nebula.h"
 
 #include <iostream>
 
@@ -52,6 +53,10 @@ int main(int argc, char **argv) {
   G.Read("data/g/elliptical-galaxy-200-200-300-10000.txt");
   G.setup();
 
+  Nebula N;
+  N.Read("/tmp/emi.txt");
+  N.setup();
+
   Galaxy G2;
   G2.Read("data/g/elliptical-galaxy-400-500-300-10000.txt");
   G2.setup();
@@ -72,8 +77,11 @@ int main(int argc, char **argv) {
 
     BG.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
     G.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
-    G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({1000, 9000, -100 - dist}) * Camera);
-    G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({7000, 6000, -100 - dist}) * Camera);
+
+    N.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({-1000, -1000, -100 - dist}) * Camera);
+
+//     G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({1000, 9000, -100 - dist}) * Camera);
+//     G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({7000, 6000, -100 - dist}) * Camera);
 //     G.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({2400, 2400, -100 - dist}) * Camera);
 
     f += 0.01;
