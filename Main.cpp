@@ -7,6 +7,8 @@
 #include "cyCodeBase/cyMatrix.h"
 #include "cyCodeBase/cyGL.h"
 
+#include "utils/Galaxy.h"
+
 #include <iostream>
 
 void setup() {
@@ -34,71 +36,25 @@ int main(int argc, char **argv) {
 
   sf::Window win(sf::VideoMode(argc > 2 ? std::stoi(argv[2]) : 1024,
                                argc > 3 ? std::stoi(argv[3]) : 768, 32),
-                               "Hello World", sf::Style::Default, settings);
+                               "Universe", sf::Style::Default, settings);
 
   setup();
   glViewport(0, 0, 1024, 768);
 
-  auto Proj = cy::Matrix4f::Perspective(110 * 3.142 / 180, 1024.0f/768.0f, 0.01f, 1000.0f);
+  auto Proj = cy::Matrix4f::Perspective(90 * 3.142 / 180, 1024.0f/768.0f, 10.1f, 15000.0f);
 
-  sf::Image Billboard;
-  Billboard.loadFromFile("sprites/star3.png");
 
-  cy::GLTexture2D BB;
-  BB.Initialize();
-  BB.SetImageRGBA(Billboard.getPixelsPtr(), Billboard.getSize().x, Billboard.getSize().y);
-  BB.BuildMipmaps();
-  BB.SetFilteringMode(GL_LINEAR, GL_LINEAR);
-  BB.SetAnisotropy(2.0f);
+  Galaxy BG;
+  BG.Read("data/g/backdrop-10k-100k.txt");
+  BG.setup();
 
-  float PS = 30;
-  std::vector<float> Triangles = {0, 0, 0,  PS, PS, 0,  0, PS, 0  , 0, 0, 0,   PS, 0, 0,   PS, PS, 0};
-  std::vector<float> PlaneTex = {0, 0,     1, 1 ,      0 , 1,      0, 0 ,     1 , 0,      1 , 1};
-  std::vector<float> VNormals =  {0, 0, 1,  0, 0, 1,   0, 0, 1   ,  0, 0, 1,  0, 0, 1,  0, 0, 1 };
+  Galaxy G;
+  G.Read("data/g/elliptical-galaxy-200-200-300-10000.txt");
+  G.setup();
 
-  unsigned int VAOP;
-  glGenVertexArrays(1, &VAOP);
-
-  glBindVertexArray(VAOP);
-
-  unsigned int VBOP[3];
-  glGenBuffers(3, VBOP);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBOP[0]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * Triangles.size(), Triangles.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-  glEnableVertexAttribArray(0);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBOP[1]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VNormals.size(), VNormals.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-  glEnableVertexAttribArray(1);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBOP[2]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * PlaneTex.size(), PlaneTex.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-  glEnableVertexAttribArray(2);
-
-  std::vector<float> Off = {0, 0, 0, 50, 50, 15, 37, 56, 300};
-  unsigned int InVBO;
-  glGenBuffers(1, &InVBO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, InVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * Off.size(), Off.data(), GL_STATIC_DRAW);
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (GLvoid*)0);
-  glVertexAttribDivisor(3, 1); // This sets the vertex attribute to instanced attribute.
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  cy::GLSLProgram ProgS;
-  if (!ProgS.BuildFiles("shaders/inst-id.vert", "shaders/simpletex.glsl", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
-    return 1;
-  }
-
-  BB.Bind(1);
-  ProgS["tex"] = 1;
-
+  Galaxy G2;
+  G2.Read("data/g/elliptical-galaxy-400-500-300-10000.txt");
+  G2.setup();
 
   bool Left = false, Right = false;
   int x, y;
@@ -108,44 +64,19 @@ int main(int argc, char **argv) {
     auto Camera = cy::Matrix4<float>(1);
     cy::Vec3f CameraPos = {0, 0, 0};
     Camera *= cy::Matrix4f::Translation(CameraPos) ;
-    Camera *= cy::Matrix4f::RotationX(0);
+    Camera *= cy::Matrix4f::RotationX(rx);
     Camera *= cy::Matrix4f::RotationY(ry);
-
-//     Prog.SetUniform("mvp", Proj * Camera.GetInverse());
 
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
-//     glDepthMask(GL_FALSE);
 
-//     glUseProgram(Prog.GetID());
-//     draw(VAO, CubeSize);
-//     glDepthMask(GL_TRUE);
+    BG.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
+    G.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
+    G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({1000, 9000, -100 - dist}) * Camera);
+    G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({7000, 6000, -100 - dist}) * Camera);
+//     G.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({2400, 2400, -100 - dist}) * Camera);
 
-    glUseProgram(ProgS.GetID());
-    cy::Matrix4<float> Model(1);
-    Model *= cy::Matrix4f::Translation({30 , -10, -30 + dist});
-    Model *= Camera; // billboarding
-//     Model *= cy::Matrix4f::RotationX(-1.52);
-    Model *= cy::Matrix4f::RotationZ(1.52);
-//     Model *= cy::Matrix4f::View(CameraPos, CameraPos, {0.0f, 1.0f, 0.0f});
-    auto MV = Camera.GetInverse() * Model;
-    ProgS.SetUniform("mvp", Proj * MV);
-    ProgS.SetUniform("model", Model);
-    ProgS.SetUniform("nt", Model.GetSubMatrix3().GetInverse().GetTranspose());
-    draw(VAOP, 6, Off.size() / 3);
-//     glEnable(GL_CULL_FACE);
-
-//     Model = cy::Matrix4<float>(1);
-//     Model *= cy::Matrix4f::Translation({-10, -20, -40});
-//     Model *= cy::Matrix4f::RotationX(-1.52);
-//     Model *= cy::Matrix4f::RotationZ(0);
-//     MV = Camera.GetInverse() * Model;
-//     ProgS.SetUniform("mvp", Proj * MV);
-//     ProgS.SetUniform("model", Model);
-//     ProgS.SetUniform("nt", Model.GetSubMatrix3().GetInverse().GetTranspose());
     f += 0.01;
-//     draw(VAOS, SphereSize);
-    glDisable(GL_CULL_FACE);
 
     sf::Event eve;
     while(win.pollEvent(eve)) {
@@ -163,8 +94,8 @@ int main(int argc, char **argv) {
             return 1;
           }
           glUseProgram(NewProg.GetID());
-          ProgS.Delete();
-          ProgS = NewProg;
+          G.ProgS.Delete();
+          G.ProgS = NewProg;
         }
       } else if (eve.type == sf::Event::MouseButtonPressed) {
         x = eve.mouseButton.x;
@@ -191,7 +122,7 @@ int main(int argc, char **argv) {
           ry = dx * 3.14 / 180;
         }
         if (Right) {
-          dist = (dx + dy)/2;
+          dist = (abs(dx) + abs(dy));
         }
       }
     }
