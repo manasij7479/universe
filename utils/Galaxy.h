@@ -4,7 +4,9 @@
 #include <vector>
 #include <fstream>
 
-struct Galaxy {
+#include "Object.h"
+
+struct Galaxy : public Object {
   std::vector<float> Offsets;
   std::vector<float> Size;
   std::vector<uint> Temp; // 0 blue, 1 white, 2 yellow, 3 orange, 4 red
@@ -25,7 +27,7 @@ struct Galaxy {
     }
   }
 
-  void setup() {
+  void setup() override {
 //   auto &Billboard = Billboard;
   Billboard.loadFromFile("sprites/star3.png");
 
@@ -98,11 +100,10 @@ struct Galaxy {
 
   }
 
-  void draw(cy::Matrix4f mvp) {
+  void draw(TransformFunc F, cyVec3f Loc) override {
     glUseProgram(ProgS.GetID());
-    ProgS["mvp"] = mvp;
+    ProgS["mvp"] = F(cy::Matrix4f::Translation(Loc));
     glBindVertexArray(VAOP);
-//   glDrawArrays(GL_TRIANGLES, 0, Count);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, Size.size());
   }
 

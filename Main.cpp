@@ -78,10 +78,11 @@ int main(int argc, char **argv) {
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
 
+    auto F = [&] (cyMatrix4f T) {return Proj * Camera.GetInverse() * T * Camera;};
 
 
-    BG.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
-    G.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
+    BG.draw(F, {0, 0, -100 - dist});
+    G.draw(F, {0, 0, -100 - dist});
 
     N.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({-1000, -1000, -100 - dist}) * Camera);
 
