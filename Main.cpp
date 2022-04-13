@@ -62,9 +62,12 @@ int main(int argc, char **argv) {
   G2.setup();
 
   bool Left = false, Right = false;
+  bool W = false, S = false;
   int x, y;
   float dist = 0, rx = 0, ry = 0;
   float f = 0.01;
+
+
   while(win.isOpen()) {
     auto Camera = cy::Matrix4<float>(1);
     cy::Vec3f CameraPos = {0, 0, 0};
@@ -74,6 +77,8 @@ int main(int argc, char **argv) {
 
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
+
+
 
     BG.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
     G.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({0, 0, -100 - dist}) * Camera);
@@ -105,6 +110,20 @@ int main(int argc, char **argv) {
           G.ProgS.Delete();
           G.ProgS = NewProg;
         }
+        if (eve.key.code == sf::Keyboard::W) {
+          W = true;
+        }
+        if (eve.key.code == sf::Keyboard::S) {
+          S = true;
+        }
+
+      } else if (eve.type == sf::Event::KeyReleased) {
+        if (eve.key.code == sf::Keyboard::W) {
+          W = false;
+        }
+        if (eve.key.code == sf::Keyboard::S) {
+          S = false;
+        }
       } else if (eve.type == sf::Event::MouseButtonPressed) {
         x = eve.mouseButton.x;
         y = eve.mouseButton.y;
@@ -129,11 +148,18 @@ int main(int argc, char **argv) {
           rx = dy * 3.14 / 180;
           ry = dx * 3.14 / 180;
         }
-        if (Right) {
-          dist = (abs(dx) + abs(dy));
-        }
+//         if (Right) {
+//           dist = (abs(dx) + abs(dy));
+//         }
       }
     }
+    if (W) {
+      dist++;
+    }
+    if (S) {
+      dist--;
+    }
+    std::cout << dist << '\n';
     win.display();
   }
 }
