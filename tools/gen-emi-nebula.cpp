@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     std::normal_distribution<float> z(0, Z);
     std::cout << z(gen) << ' ';
     
-    std::normal_distribution<float> s(1, 0.3);
+    std::normal_distribution<float> s(60, 20);
     std::cout << s(gen) << ' ';
     
     int col = 1;

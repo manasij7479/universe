@@ -8,10 +8,12 @@ layout(location=5) in int temp;
 
 uniform mat4 mvp;
 out vec2 texi;
+flat out vec3 offi;
 flat out int tempi;
 
 void main() {
-  gl_Position = mvp * vec4(pos * size + off, 1);
+  gl_Position = mvp * size * vec4(pos * size + off, 1);
   texi = texc;
   tempi = temp;
+  offi = off;
 }

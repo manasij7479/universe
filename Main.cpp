@@ -7,8 +7,7 @@
 #include "cyCodeBase/cyMatrix.h"
 #include "cyCodeBase/cyGL.h"
 
-#include "utils/Galaxy.h"
-#include "utils/Nebula.h"
+#include "utils/Scene.h"
 
 #include <iostream>
 
@@ -21,12 +20,6 @@ void setup() {
   glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
-void draw(GLuint VAO, size_t Count, size_t Instances) {
-  glBindVertexArray(VAO);
-//   glDrawArrays(GL_TRIANGLES, 0, Count);
-  glDrawArraysInstanced(GL_TRIANGLES, 0, Count, Instances);
 }
 
 int main(int argc, char **argv) {
@@ -44,53 +37,30 @@ int main(int argc, char **argv) {
 
   auto Proj = cy::Matrix4f::Perspective(90 * 3.142 / 180, 1024.0f/768.0f, 10.1f, 15000.0f);
 
+  Scene Sc("data/s/test.txt");
 
-  Galaxy BG;
-  BG.Read("data/g/backdrop-10k-100k.txt");
-  BG.setup();
-
-  Galaxy G;
-  G.Read("data/g/elliptical-galaxy-200-200-300-10000.txt");
-  G.setup();
-
-  Nebula N;
-  N.Read("/tmp/emi.txt");
-  N.setup();
-
-  Galaxy G2;
-  G2.Read("data/g/elliptical-galaxy-400-500-300-10000.txt");
-  G2.setup();
-
-  bool Left = false, Right = false;
-  bool W = false, S = false;
+  bool W = false, S = false, A = false, D = false, Z = false, C = false, Left = false, Right = false, Up = false, Down = false;
   int x, y;
-  float dist = 0, rx = 0, ry = 0;
+  float zdist = 1000, xdist = 0, ydist = 0, rx = 0, ry = 0;
   float f = 0.01;
 
-
   while(win.isOpen()) {
+
     auto Camera = cy::Matrix4<float>(1);
-    cy::Vec3f CameraPos = {0, 0, 0};
+    auto CameraRot = cy::Matrix4<float>(1);
+    cy::Vec3f CameraPos = {xdist, ydist, zdist};
+    CameraRot *= cy::Matrix4f::RotationX(ry);
+    CameraRot *= cy::Matrix4f::RotationY(rx);
     Camera *= cy::Matrix4f::Translation(CameraPos) ;
-    Camera *= cy::Matrix4f::RotationX(rx);
-    Camera *= cy::Matrix4f::RotationY(ry);
+    Camera*= CameraRot;
+
+    auto F = [&] (cyMatrix4f Translation) {
+      return Proj * Camera.GetInverse() * Translation * CameraRot;
+    };
 
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
-
-    auto F = [&] (cyMatrix4f T) {return Proj * Camera.GetInverse() * T * Camera;};
-
-
-    BG.draw(F, {0, 0, -100 - dist});
-    G.draw(F, {0, 0, -100 - dist});
-
-    N.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({-1000, -1000, -100 - dist}) * Camera);
-
-//     G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({1000, 9000, -100 - dist}) * Camera);
-//     G2.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({7000, 6000, -100 - dist}) * Camera);
-//     G.draw(Proj * Camera.GetInverse() * cy::Matrix4f::Translation({2400, 2400, -100 - dist}) * Camera);
-
-    f += 0.01;
+    Sc(F);
 
     sf::Event eve;
     while(win.pollEvent(eve)) {
@@ -100,22 +70,35 @@ int main(int argc, char **argv) {
         if (eve.key.code == sf::Keyboard::Escape) {
           win.close();
         }
-        if (eve.key.code == sf::Keyboard::F6) {
-          std::cout << "Recompiling Shaders.\n";
-          cy::GLSLProgram NewProg;
-          if (!NewProg.BuildFiles("vert.glsl", "frag.glsl", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
-            std::cerr << "Failed to recompile shaders.\n";
-            return 1;
-          }
-          glUseProgram(NewProg.GetID());
-          G.ProgS.Delete();
-          G.ProgS = NewProg;
-        }
         if (eve.key.code == sf::Keyboard::W) {
           W = true;
         }
         if (eve.key.code == sf::Keyboard::S) {
           S = true;
+        }
+        if (eve.key.code == sf::Keyboard::A) {
+          A = true;
+        }
+        if (eve.key.code == sf::Keyboard::D) {
+          D = true;
+        }
+        if (eve.key.code == sf::Keyboard::Z) {
+          Z = true;
+        }
+        if (eve.key.code == sf::Keyboard::C) {
+          C = true;
+        }
+        if (eve.key.code == sf::Keyboard::Left) {
+          Left = true;
+        }
+        if (eve.key.code == sf::Keyboard::Right) {
+          Right = true;
+        }
+        if (eve.key.code == sf::Keyboard::Up) {
+          Up = true;
+        }
+        if (eve.key.code == sf::Keyboard::Down) {
+          Down = true;
         }
 
       } else if (eve.type == sf::Event::KeyReleased) {
@@ -125,42 +108,63 @@ int main(int argc, char **argv) {
         if (eve.key.code == sf::Keyboard::S) {
           S = false;
         }
-      } else if (eve.type == sf::Event::MouseButtonPressed) {
-        x = eve.mouseButton.x;
-        y = eve.mouseButton.y;
-        if (eve.mouseButton.button == sf::Mouse::Right) {
-          Right = true;
+        if (eve.key.code == sf::Keyboard::A) {
+          A = false;
         }
-        if (eve.mouseButton.button == sf::Mouse::Left) {
-          Left = true;
+        if (eve.key.code == sf::Keyboard::D) {
+          D = false;
         }
-      } else if (eve.type == sf::Event::MouseButtonReleased) {
-        if (eve.mouseButton.button == sf::Mouse::Right) {
-          Right = false;
+        if (eve.key.code == sf::Keyboard::Z) {
+          Z = false;
         }
-        if (eve.mouseButton.button == sf::Mouse::Left) {
+        if (eve.key.code == sf::Keyboard::C) {
+          C = false;
+        }
+        if (eve.key.code == sf::Keyboard::Left) {
           Left = false;
         }
-      } else if (eve.type == sf::Event::MouseMoved) {
-        int dx = eve.mouseMove.x - x;
-        int dy = eve.mouseMove.y - y;
-
-        if (Left) {
-          rx = dy * 3.14 / 180;
-          ry = dx * 3.14 / 180;
+        if (eve.key.code == sf::Keyboard::Right) {
+          Right = false;
         }
-//         if (Right) {
-//           dist = (abs(dx) + abs(dy));
-//         }
+        if (eve.key.code == sf::Keyboard::Up) {
+          Up = false;
+        }
+        if (eve.key.code == sf::Keyboard::Down) {
+          Down = false;
+        }
+
       }
     }
     if (W) {
-      dist++;
+      zdist--;
     }
     if (S) {
-      dist--;
+      zdist++;
     }
-    std::cout << dist << '\n';
+    if (A) {
+      xdist--;
+    }
+    if (D) {
+      xdist++;
+    }
+    if (Z) {
+      ydist--;
+    }
+    if (C) {
+      ydist++;
+    }
+    if (Left) {
+      rx += 0.01;
+    }
+    if (Right) {
+      rx -= 0.01;
+    }
+    if (Up) {
+      ry -= 0.01;
+    }
+    if (Down) {
+      ry += 0.01;
+    }
     win.display();
   }
 }

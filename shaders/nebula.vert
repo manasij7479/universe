@@ -11,7 +11,7 @@ out vec2 texi;
 flat out int tempi;
 
 void main() {
-  gl_Position = mvp * vec4(pos * size + off, 1);
+  gl_Position = mvp * size * vec4(pos * size + off, 1);
   texi = texc;
   tempi = temp;
 }
