@@ -1,0 +1,2 @@
+g data/g/backdrop-10k-100k.txt 0 0 0
+gs data/g/sprites-backdrop-10k-1000.txt 0 0 0

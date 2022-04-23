@@ -29,6 +29,8 @@ public:
         O = new ReflectionNebula();
       } else if (Type == "BigStar" || Type == "BS" || Type == "bs") {
         O = new BigStar();
+      } else if (Type == "GalaxySprites" || Type == "GS" || Type == "gs") {
+        O = new GalaxySprites();
       } else {
         std::cerr << "Failed to read " << Type << " " << FileName << "\n";
         continue;

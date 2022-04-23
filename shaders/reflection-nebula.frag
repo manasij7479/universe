@@ -19,7 +19,7 @@ void main() {
   float loc = length(offi);
   float ambient1 = loc/400;
   float ambient2 = 1 / ambient1;
-  float intensity  =  (diff * 1.2 + ambient1 + ambient2)/2;
+  float intensity  =  (diff * 1.5 + ambient1 + ambient2/2)/2;
 
 
   color.a -= 0.61;

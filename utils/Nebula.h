@@ -91,13 +91,12 @@ struct EmissionNebula : public Object {
     return;
   }
 
-  BB.Bind(1);
-  ProgS["tex"] = 1;
-
   }
 
   void draw(TransformFunc F, cyVec3f Loc) override {
     glUseProgram(ProgS.GetID());
+    BB.Bind(1);
+    ProgS["tex"] = 1;
     ProgS["mvp"] = F(cy::Matrix4f::Translation(Loc));;
     glBindVertexArray(VAOP);
 //   glDrawArrays(GL_TRIANGLES, 0, Count);
@@ -207,15 +206,16 @@ struct ReflectionNebula : public Object {
     return;
   }
 
-  BB.Bind(1);
-  NT.Bind(2);
-  ProgS["tex"] = 1;
-  ProgS["norm"] = 2;
-
   }
 
   void draw(TransformFunc F, cyVec3f Loc) override {
     glUseProgram(ProgS.GetID());
+
+    BB.Bind(1);
+    NT.Bind(2);
+    ProgS["tex"] = 1;
+    ProgS["norm"] = 2;
+
     ProgS["mvp"] = F(cy::Matrix4f::Translation(Loc));;
     glBindVertexArray(VAOP);
 //   glDrawArrays(GL_TRIANGLES, 0, Count);

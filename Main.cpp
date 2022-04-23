@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
   auto Proj = cy::Matrix4f::Perspective(90 * 3.142 / 180, 1024.0f/768.0f, 10.1f, 15000.0f);
 
-  Scene Sc("data/s/test.txt");
+  Scene Sc(argv[1]);
 
   bool W = false, S = false, A = false, D = false, Z = false, C = false, Left = false, Right = false, Up = false, Down = false;
   int x, y;
