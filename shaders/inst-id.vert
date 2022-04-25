@@ -9,9 +9,10 @@ layout(location=5) in int temp;
 uniform mat4 mvp;
 out vec2 texi;
 flat out int tempi;
-
+out vec2 sp;
 void main() {
   gl_Position = mvp * vec4(pos * size + off, 1);
   texi = texc;
   tempi = temp;
+  sp = pos.xy;
 }

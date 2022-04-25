@@ -3,6 +3,7 @@ in vec2 texi;
 flat in int tempi;
 uniform sampler2D tex;
 layout(location = 0) out vec4 color;
+in vec2 sp;
 
 void main() {
   color = texture(tex, texi);
@@ -24,4 +25,11 @@ void main() {
     default:
       break;
   }
+
+  if (abs(sp.x) < 0.2 || abs(sp.y) < 0.2) {
+    float dist = sqrt(sp.x * sp.x + sp.y * sp.y);
+    color.a += (10 - dist)/20;
+  }
+  if (color.a > 0.5) color.a += 0.1; // else color.a -= 0.1;
+
 }

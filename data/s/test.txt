@@ -1,4 +1,4 @@
-gs data/g/sprites-backdrop-10k-1000.txt 0 0 -1000
+gs data/g/sprites-backdrop-10k-1000.txt 0 0 -2000
 g data/g/backdrop-10k-100k.txt 0 0 0
 rn data/n/tmp.txt 0 0 0
 g data/g/elliptical-galaxy-400-500-300-10000.txt 1000 1000 1000

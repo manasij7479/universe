@@ -23,6 +23,7 @@ void main() {
 
 
   color.a -= 0.61;
+//   color.a *= 0.1;
 //   0 blue, 1 white, 2 yellow, 3 orange, 4 red
   switch (tempi) {
     case 0:

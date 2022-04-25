@@ -28,14 +28,17 @@ int main(int argc, char **argv) {
   settings.minorVersion = 3;
   settings.attributeFlags = sf::ContextSettings::Core;
 
-  sf::Window win(sf::VideoMode(argc > 2 ? std::stoi(argv[2]) : 1024,
-                               argc > 3 ? std::stoi(argv[3]) : 768, 32),
-                               "Universe", sf::Style::Default, settings);
+  auto WIDTH = 1920;
+  auto HEIGHT = 1080;
+
+  sf::Window win(sf::VideoMode(argc > 2 ? std::stoi(argv[2]) : WIDTH,
+                               argc > 3 ? std::stoi(argv[3]) : HEIGHT, 32),
+                               "Universe", sf::Style::Fullscreen, settings);
 
   setup();
-  glViewport(0, 0, 1024, 768);
+  glViewport(0, 0, WIDTH, HEIGHT);
 
-  auto Proj = cy::Matrix4f::Perspective(90 * 3.142 / 180, 1024.0f/768.0f, 10.1f, 15000.0f);
+  auto Proj = cy::Matrix4f::Perspective(90 * 3.142 / 180, WIDTH * 1.0f/HEIGHT, 10.1f, 15000.0f);
 
   Scene Sc(argv[1]);
 

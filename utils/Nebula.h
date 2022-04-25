@@ -136,6 +136,7 @@ struct ReflectionNebula : public Object {
   }
 
   void setup() override {
+//   Billboard.loadFromFile("sprites/smoke/test.png");
   Billboard.loadFromFile("sprites/star3.png");
   BB.Initialize();
   BB.SetImageRGBA(Billboard.getPixelsPtr(), Billboard.getSize().x, Billboard.getSize().y);

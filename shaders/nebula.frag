@@ -7,6 +7,7 @@ layout(location = 0) out vec4 color;
 void main() {
   color = texture(tex, texi);
   color.a -= 0.6;
+//   color.a *= 0.2;
   // 0 blue, 1 white, 2 yellow, 3 orange, 4 red
   switch (tempi) {
     case 0:
