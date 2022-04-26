@@ -7,7 +7,7 @@
 #include "Object.h"
 
 struct Galaxy : public Object {
-  std::vector<float> Offsets;
+  std::vector<float> XOffsets, YOffsets, ZOffsets;
   std::vector<float> Size;
   std::vector<uint> Temp; // 0 blue, 1 white, 2 yellow, 3 orange, 4 red
   std::vector<float> Lum; // TODO
@@ -19,9 +19,9 @@ struct Galaxy : public Object {
     float s;
     uint t;
     while(in >> x >> y >> z >> s >> t) {
-      Offsets.push_back(x);
-      Offsets.push_back(y);
-      Offsets.push_back(z);
+      XOffsets.push_back(x);
+      YOffsets.push_back(y);
+      ZOffsets.push_back(z);
       Size.push_back(s);
       Temp.push_back(t);
     }
@@ -65,27 +65,45 @@ struct Galaxy : public Object {
   glEnableVertexAttribArray(2);
 
 //   unsigned int InVBO[3];
-  glGenBuffers(3, InVBO);
+  glGenBuffers(5, InVBO);
 
   glBindBuffer(GL_ARRAY_BUFFER, InVBO[0]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * Offsets.size(), Offsets.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * XOffsets.size(), XOffsets.data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (GLvoid*)0);
+  glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (GLvoid*)0);
   glVertexAttribDivisor(3, 1); // This sets the vertex attribute to instanced attribute.
 
   glBindBuffer(GL_ARRAY_BUFFER, InVBO[1]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * Size.size(), Size.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * YOffsets.size(), YOffsets.data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(4);
   glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (GLvoid*)0);
   glVertexAttribDivisor(4, 1); // This sets the vertex attribute to instanced attribute.
 
-  glBindBuffer(GL_ARRAY_BUFFER, InVBO[2]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(int) * Temp.size(), Temp.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, InVBO[2]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ZOffsets.size(), ZOffsets.data(), GL_STATIC_DRAW);
   glEnableVertexAttribArray(5);
-  glVertexAttribIPointer(5, 1, GL_UNSIGNED_INT, sizeof(GLuint), (GLvoid*)0);
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (GLvoid*)0);
   glVertexAttribDivisor(5, 1); // This sets the vertex attribute to instanced attribute.
 
+  glBindBuffer(GL_ARRAY_BUFFER, InVBO[3]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * Size.size(), Size.data(), GL_STATIC_DRAW);
+  glEnableVertexAttribArray(6);
+  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (GLvoid*)0);
+  glVertexAttribDivisor(6, 1); // This sets the vertex attribute to instanced attribute.
+
+  glBindBuffer(GL_ARRAY_BUFFER, InVBO[4]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(int) * Temp.size(), Temp.data(), GL_STATIC_DRAW);
+  glEnableVertexAttribArray(7);
+  glVertexAttribIPointer(7, 1, GL_UNSIGNED_INT, sizeof(GLuint), (GLvoid*)0);
+  glVertexAttribDivisor(7, 1); // This sets the vertex attribute to instanced attribute.
+
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+//   std::ofstream out("/tmp/out.txt");
+//
+//   for (uint i = 0; i < Size.size(); ++i) {
+//     out << Offsets[3 * i] << ' ' << Offsets[3 * i + 1] << ' ' << Offsets[3 * i + 2] << ' ' << Size[i] << ' ' << Temp[i] << '\n';
+//   }
 
 //   cy::GLSLProgram ProgS;
   if (!ProgS.BuildFiles("shaders/inst-id.vert", "shaders/star.frag", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
@@ -106,12 +124,12 @@ struct Galaxy : public Object {
 
   unsigned int VAOP;
   unsigned int VBOP[3];
-  unsigned int InVBO[3];
+  unsigned int InVBO[5];
   cy::GLSLProgram ProgS;
   sf::Image Billboard;
   cy::GLTexture2D BB;
 
-  float PS = 10;
+  float PS = 8;
 
 };
 
@@ -128,7 +146,7 @@ struct BigStar : public Object {
 //     int temp;
 //     std::ifstream in(File);
 //     in >> size >> temp;
-    Size.push_back(30);
+    Size.push_back(130);
     Temp.push_back(1);
 //
 //     float x, y, z;
@@ -206,7 +224,7 @@ struct BigStar : public Object {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 //   cy::GLSLProgram ProgS;
-  if (!ProgS.BuildFiles("shaders/inst-id.vert", "shaders/bigstar.frag", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
+  if (!ProgS.BuildFiles("shaders/gsp.vert", "shaders/bigstar.frag", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
     std::cerr << "Shader failed to compile.\n";
     return;
   }
@@ -325,7 +343,7 @@ struct GalaxySprites : public Object {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 //   cy::GLSLProgram ProgS;
-  if (!ProgS.BuildFiles("shaders/inst-id.vert", "shaders/starsprites.frag", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
+  if (!ProgS.BuildFiles("shaders/gsp.vert", "shaders/starsprites.frag", nullptr, nullptr, nullptr, 0, nullptr, &std::cerr)) {
     std::cerr << "Shader failed to compile.\n";
     return;
   }

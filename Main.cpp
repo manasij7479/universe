@@ -20,7 +20,8 @@ void setup() {
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int main(int argc, char **argv) {
@@ -39,12 +40,12 @@ int main(int argc, char **argv) {
   setup();
   glViewport(0, 0, WIDTH, HEIGHT);
 
-  auto Proj = cy::Matrix4f::Perspective(90 * 3.142 / 180, WIDTH * 1.0f/HEIGHT, 10.1f, 15000.0f);
+  auto Proj = cy::Matrix4f::Perspective(90 * 3.142 / 180, WIDTH * 1.0f/HEIGHT, 1.1f, 15000.0f);
 
   Scene Sc(argv[1]);
 
   bool W = false, S = false, A = false, D = false, Z = false, C = false, Left = false, Right = false, Up = false, Down = false;
-  float zdist = 2500, xdist = 0, ydist = 0, rx = 0, ry = 0;
+  float zdist = 4000, xdist = 0, ydist = 0, rx = 0, ry = 0;
 
   auto start = clock();
   auto rate = CLOCKS_PER_SEC;
@@ -61,7 +62,7 @@ int main(int argc, char **argv) {
       start = t;
     }
 
-    auto title = "Universe - " + std::to_string(xdist) + " " + std::to_string(ydist) + " " + std::to_string(zdist) + " -  FPS " + std::to_string(fps);
+    auto title = "Universe - Camera " + std::to_string(int(xdist)) + " " + std::to_string(int(ydist)) + " " + std::to_string(int(zdist)) + " -  FPS " + std::to_string(fps);
 
     win.setTitle(title);
     auto Camera = cy::Matrix4<float>(1);
@@ -79,6 +80,9 @@ int main(int argc, char **argv) {
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
     Sc(F);
+
+
+    std::map<sf::Keyboard::Key, long> ticks;
 
     sf::Event eve;
     while(win.pollEvent(eve)) {
@@ -154,22 +158,22 @@ int main(int argc, char **argv) {
       }
     }
     if (W) {
-      zdist--;
+      zdist-=10;
     }
     if (S) {
-      zdist++;
+      zdist+=10;
     }
     if (A) {
-      xdist--;
+      xdist-=10;
     }
     if (D) {
-      xdist++;
+      xdist+=10;
     }
     if (Z) {
-      ydist--;
+      ydist-=10;
     }
     if (C) {
-      ydist++;
+      ydist+=10;
     }
     if (Left) {
       rx += 0.01;

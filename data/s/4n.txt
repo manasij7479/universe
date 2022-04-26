@@ -1,0 +1,9 @@
+gs data/g/sprites-backdrop-10k-1000.txt 0 0 -2000
+g data/g/backdrop-10k-100k.txt 0 0 0
+rn data/n/emi.txt -2000 2000 0
+rn data/n/emi2.txt -1000 -1000 1000
+rn data/n/emi2.txt -2000 1000 0
+rn data/n/orion.txt 2000 1000 0
+rn data/n/lagoon.txt 2000 -2000 0
+g data/g/elliptical-galaxy-400-500-300-10000.txt 0 0 -1000
+bs dummy 0 0 -1000

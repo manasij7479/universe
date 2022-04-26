@@ -24,11 +24,11 @@ void main() {
   float loc = length(offi);
   float ambient1 = loc/400;
   float ambient2 = 1 / ambient1;
-  float intensity  =  (diff * 3 + ambient1 + ambient2/2)/2;
+  float intensity  =  (diff * 2 + ambient1 + ambient2/2)/2;
 
 
   color.a -= 0.61;
-//   color.a *= 0.1;
+  color.a *= 0.4;
 //   0 blue, 1 white, 2 yellow, 3 orange, 4 red
   switch (tempi) {
     case 0:
@@ -48,5 +48,5 @@ void main() {
       break;
   }
   color.rgb *= intensity;
-  color.a = clamp(color.a, 0, 1);
+//   color.a = clamp(color.a, 0, 1);
 }

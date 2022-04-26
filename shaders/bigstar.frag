@@ -24,5 +24,5 @@ void main() {
     default:
       break;
   }
-  color.a *= 1.65;
+
 }

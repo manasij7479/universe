@@ -26,13 +26,15 @@ void main() {
       break;
   }
 
-  if (abs(sp.x) < 0.2 || abs(sp.y) < 0.2) {
+  if (abs(sp.x) < 0.18 || abs(sp.y) < 0.18) {
     float dist = sqrt(sp.x * sp.x + sp.y * sp.y);
     color.a += (10 - dist)/20;
   }
-  if (color.a > 0.5) color.a += 0.1; // else color.a -= 0.1;
+  if (color.a > 0.6) color.a += 0.1; // else color.a -= 0.1;
 
-  color.a *= (2 - gl_FragCoord.z);
+//   color.a -= 0.4;
+
+  color.a *= (2.3 - gl_FragCoord.z);
 
   color.a = clamp(color.a, 0, 1);
 

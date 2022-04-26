@@ -50,7 +50,7 @@ public:
       if (auto *RN = dynamic_cast<ReflectionNebula *>(Objects[i])) {
         std::vector<cyVec3f> LightDirs;
         for (auto LL : LightLocs) {
-          LightDirs.push_back(Locs[i] - LL);
+          LightDirs.push_back(LL);
         }
         RN->setLightLocs(LightDirs);
       }
