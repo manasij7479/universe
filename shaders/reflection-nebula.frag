@@ -3,13 +3,18 @@ in vec2 texi;
 // in vec3 normi;
 flat in int tempi;
 flat in vec3 offi;
+
+flat in vec3 lighti0;
+
 uniform sampler2D tex;
 layout(location = 0) out vec4 color;
-// uniform vec3 lightDir;
+
 
 void main() {
   color = texture(tex, texi);
-  vec3 lightDir = vec3(1, 0, 0);
+  vec3 lightDir = normalize(lighti0);
+//   vec3 lightDir = vec3(1, 0, 0);
+
 //   color *= dot(normalize(lightDir), normalize(texture(norm, texi).xyz));
 //   color *= dot(normalize(lightDir), normalize(-offi));
 
@@ -19,7 +24,7 @@ void main() {
   float loc = length(offi);
   float ambient1 = loc/400;
   float ambient2 = 1 / ambient1;
-  float intensity  =  (diff * 1.5 + ambient1 + ambient2/2)/2;
+  float intensity  =  (diff * 3 + ambient1 + ambient2/2)/2;
 
 
   color.a -= 0.61;
@@ -43,4 +48,5 @@ void main() {
       break;
   }
   color.rgb *= intensity;
+  color.a = clamp(color.a, 0, 1);
 }

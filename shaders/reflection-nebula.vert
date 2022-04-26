@@ -10,10 +10,15 @@ uniform mat4 mvp;
 out vec2 texi;
 flat out vec3 offi;
 flat out int tempi;
+flat out vec3 lighti0;
+
+uniform vec3 light0;
 
 void main() {
   gl_Position = mvp * size * vec4(pos * size + off, 1);
   texi = texc;
   tempi = temp;
   offi = off;
+
+  lighti0 = (mvp * vec4(light0, 0)).xyz;
 }

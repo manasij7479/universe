@@ -29,6 +29,7 @@ public:
         O = new ReflectionNebula();
       } else if (Type == "BigStar" || Type == "BS" || Type == "bs") {
         O = new BigStar();
+        LightLocs.push_back({x, y, z});
       } else if (Type == "GalaxySprites" || Type == "GS" || Type == "gs") {
         O = new GalaxySprites();
       } else {
@@ -44,21 +45,20 @@ public:
       Objects.push_back(O);
       Locs.push_back({x, y, z});
     }
-  }
 
-  void operator()(TransformFunc F) {
-    std::vector<cyVec3f> LightLocs;
     for (int i = 0; i < Objects.size(); ++i) {
-      if (dynamic_cast<BigStar *>(Objects[i])) {
-        LightLocs.push_back(Locs[i]);
+      if (auto *RN = dynamic_cast<ReflectionNebula *>(Objects[i])) {
+        std::vector<cyVec3f> LightDirs;
+        for (auto LL : LightLocs) {
+          LightDirs.push_back(Locs[i] - LL);
+        }
+        RN->setLightLocs(LightDirs);
       }
     }
 
-//     for (int i = 0; i < Objects.size(); ++i) {
-//       if (dynamic_cast<BigStar *>(Objects[i])) {
-//         LightLocs.push_back(Locs[i]);
-//       }
-//     }
+  }
+
+  void operator()(TransformFunc F) {
 
     for (int i = 0; i < Objects.size(); ++i) {
       Objects[i]->draw(F, Locs[i]);
@@ -67,6 +67,7 @@ public:
 private:
   std::vector<Object *> Objects;
   std::vector<cyVec3f> Locs;
+  std::vector<cyVec3f> LightLocs;
 
 };
 

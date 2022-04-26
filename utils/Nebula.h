@@ -209,6 +209,10 @@ struct ReflectionNebula : public Object {
 
   }
 
+  void setLightLocs(std::vector<cy::Vec3f> LightLocs_) {
+    LightLocs = LightLocs_;
+  }
+
   void draw(TransformFunc F, cyVec3f Loc) override {
     glUseProgram(ProgS.GetID());
 
@@ -216,6 +220,8 @@ struct ReflectionNebula : public Object {
     NT.Bind(2);
     ProgS["tex"] = 1;
     ProgS["norm"] = 2;
+
+    ProgS["light0"] = LightLocs[0];
 
     ProgS["mvp"] = F(cy::Matrix4f::Translation(Loc));;
     glBindVertexArray(VAOP);
@@ -234,6 +240,8 @@ struct ReflectionNebula : public Object {
   cy::GLTexture2D NT;
 
   float PS = 20;
+
+  std::vector<cy::Vec3f> LightLocs;
 
 };
 

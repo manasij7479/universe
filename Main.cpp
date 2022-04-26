@@ -16,6 +16,7 @@ void setup() {
   glClearColor(0.0f, 0.0f, 0.0f, 1);
 
   glEnable(GL_CULL_FACE);
+  glClearDepth(1.0f);
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
   glEnable(GL_BLEND);
@@ -33,7 +34,7 @@ int main(int argc, char **argv) {
 
   sf::Window win(sf::VideoMode(argc > 2 ? std::stoi(argv[2]) : WIDTH,
                                argc > 3 ? std::stoi(argv[3]) : HEIGHT, 32),
-                               "Universe", sf::Style::Fullscreen, settings);
+                               "Universe", sf::Style::Default, settings);
 
   setup();
   glViewport(0, 0, WIDTH, HEIGHT);
@@ -43,12 +44,26 @@ int main(int argc, char **argv) {
   Scene Sc(argv[1]);
 
   bool W = false, S = false, A = false, D = false, Z = false, C = false, Left = false, Right = false, Up = false, Down = false;
-  int x, y;
-  float zdist = 1000, xdist = 0, ydist = 0, rx = 0, ry = 0;
-  float f = 0.01;
+  float zdist = 2500, xdist = 0, ydist = 0, rx = 0, ry = 0;
+
+  auto start = clock();
+  auto rate = CLOCKS_PER_SEC;
+  int fps = 0;
+  int frames = 0;
 
   while(win.isOpen()) {
 
+    auto t = clock() - start;
+    frames++;
+    if (t - start > rate) {
+      fps = frames;
+      frames = 0;
+      start = t;
+    }
+
+    auto title = "Universe - " + std::to_string(xdist) + " " + std::to_string(ydist) + " " + std::to_string(zdist) + " -  FPS " + std::to_string(fps);
+
+    win.setTitle(title);
     auto Camera = cy::Matrix4<float>(1);
     auto CameraRot = cy::Matrix4<float>(1);
     cy::Vec3f CameraPos = {xdist, ydist, zdist};

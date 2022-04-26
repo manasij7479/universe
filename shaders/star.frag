@@ -32,4 +32,8 @@ void main() {
   }
   if (color.a > 0.5) color.a += 0.1; // else color.a -= 0.1;
 
+  color.a *= (2 - gl_FragCoord.z);
+
+  color.a = clamp(color.a, 0, 1);
+
 }
